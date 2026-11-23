@@ -342,7 +342,6 @@ struct ContentView: View {
         @Bindable var contentViewModel = contentViewModel
 
         ZStack {
-//                BubbleBackgroundView(isActive: $contentViewModel.isBubbleAnimation)
                 BackgroundAnimationView(phase: contentViewModel.nowBackgroundPhase)
                     .ignoresSafeArea()
                 BubbleBackgroundView(isActive: $contentViewModel.isBubbleAnimation)
@@ -545,7 +544,7 @@ struct ContentView: View {
                         }
                         
                     }
-                    .sharedBackgroundVisibility(.hidden)
+                    .customSharedBackgroundVisibility()
                 }
         }
         .overlay(alignment: .top) {
@@ -570,6 +569,17 @@ struct ContentView: View {
                             LinearKeyframe(10, duration: 0.2)
                         }
                     })
+        }
+    }
+}
+
+extension ToolbarContent {
+    @ToolbarContentBuilder
+    func customSharedBackgroundVisibility() -> some ToolbarContent {
+        if #available(iOS 26.0, *) {
+            self.sharedBackgroundVisibility(.hidden)
+        } else {
+            self
         }
     }
 }

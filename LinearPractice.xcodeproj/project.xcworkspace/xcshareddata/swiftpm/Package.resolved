@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/keeki-fami/FloatingNumbersBackground",
       "state" : {
-        "revision" : "87c590db12d0907b8ab0efce09b62929db6e411e",
-        "version" : "0.1.0"
+        "revision" : "ce32624b3dfeac2735252c9351ed22a3f8accf31",
+        "version" : "0.1.1"
       }
     },
     {

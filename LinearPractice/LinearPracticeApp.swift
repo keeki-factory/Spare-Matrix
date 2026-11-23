@@ -61,14 +61,26 @@ struct LinearPracticeApp: App {
                             } label : {
                                 Text("キャンセル")
                             }
-                            Button(role: .confirm) {
-                                if let url = URL(string: "https://apps.apple.com/jp/app/%E7%84%A1%E9%99%90%E8%A1%8C%E5%88%97%E8%A8%88%E7%AE%97/id6785983550") {
-                                    if UIApplication.shared.canOpenURL(url) {
-                                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                            if #available(iOS 26.0, *) {
+                                Button(role: .confirm) {
+                                    if let url = URL(string: "https://apps.apple.com/jp/app/%E7%84%A1%E9%99%90%E8%A1%8C%E5%88%97%E8%A8%88%E7%AE%97/id6785983550") {
+                                        if UIApplication.shared.canOpenURL(url) {
+                                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                                        }
                                     }
+                                } label: {
+                                    Text("AppStoreに移動")
                                 }
-                            } label: {
-                                Text("AppStoreに移動")
+                            } else {
+                                Button(action: {
+                                    if let url = URL(string: "https://apps.apple.com/jp/app/%E7%84%A1%E9%99%90%E8%A1%8C%E5%88%97%E8%A8%88%E7%AE%97/id6785983550") {
+                                        if UIApplication.shared.canOpenURL(url) {
+                                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                                        }
+                                    }
+                                }, label: {
+                                    Text("AppStoreに移動")
+                                })
                             }
                         } message: {
                             Text("AppStoreに移動して最新版をインストールします")

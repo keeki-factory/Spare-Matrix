@@ -12,6 +12,7 @@ enum BGMComponent: String {
     case buttleBGM = "playingTimeAttack"
     case homeBGM = "home"
 }
+
 enum SoundComponent: String {
     case problemCorrect = "success"
     case timeAttackFinish = "timeattackFinish"
@@ -20,6 +21,7 @@ enum SoundComponent: String {
     case countdown = "countdown"
 }
 
+// BGM
 class BGMPlayer {
     
     private var audioPlayer: AVAudioPlayer?
@@ -27,11 +29,15 @@ class BGMPlayer {
     var nowPlaying: BGMComponent?
     
     func play(_ component: BGMComponent) {
+        
+        // 再生中の音楽を再生しようとしている場合
         if let nowPlaying = self.nowPlaying, nowPlaying == component {
-            print("音楽を再再生しません")
+            print("音楽を再再生しようとしました")
             return
+        } else {
+            print("音楽を再生します")
         }
-        print("音楽を再生します: \(component.rawValue)")
+        
         nowPlaying = component
         guard let url = Bundle.main.url(
             forResource: component.rawValue,
@@ -43,7 +49,7 @@ class BGMPlayer {
 
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.numberOfLoops = -1
+            audioPlayer?.numberOfLoops = -1 // 無限ループ
             audioPlayer?.prepareToPlay()
             audioPlayer?.play()
             print("再生しました: \(component.rawValue)")
@@ -52,17 +58,21 @@ class BGMPlayer {
         }
     }
     
+    // だんだん音を小さくしてストップする
     func fadeStop() {
         print("ストップします")
-        audioPlayer?.setVolume(0.0, fadeDuration: 1.0)
+        audioPlayer?.setVolume(0.0, fadeDuration: 0.35) //1秒かけてvolumeを0にする
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        // 1秒後に再生をストップする
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             self.audioPlayer?.stop()
-            self.audioPlayer?.currentTime = 0
+            self.audioPlayer?.currentTime = 0 // 現在の再生時間を00:00に戻す
         }
         nowPlaying = nil
         print("ストップしました")
     }
+    
+    // ストップする
     func stop() {
         self.audioPlayer?.stop()
         self.audioPlayer?.currentTime = 0
@@ -72,6 +82,7 @@ class BGMPlayer {
     
 }
 
+// 効果音
 class SoundPlayer {
     private var audioPlayer: AVAudioPlayer?
     static let shared = SoundPlayer()
