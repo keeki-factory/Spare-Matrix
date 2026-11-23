@@ -28,39 +28,40 @@ final class GameCenterManager: NSObject {
     
     var error: Error?
     private(set) var isAuthenticated = false
-    static let highscoreID = "com.LinearPractice.keekifami.HighScore"
+    static let highscoreID = "com.LinearPractice.keeki.maxcombo"
+    // com.LinearPractice.keeki.maxcombo
     
     // 周期的Leaderboardの期間を調べ、コンボを変更する。
-    func checkDuration() async {
-        var flag = true
-        do {
-            guard let leaderboard = try await GKLeaderboard.loadLeaderboards(
-                IDs: ["com.LinearPractice.keeki.WeeklyComboRanking"]
-            ).first else {
-                return
-            }
-            
-            guard let startDate = leaderboard.startDate else {
-                return
-            }
-            
-            let currentWeeklyRankingDate = weeklyDateKey(startDate)
-            if let strData = UserDefaults.standard.string(forKey: "weeklyComboRanking") {
-                if strData != currentWeeklyRankingDate {
-                    flag = false
-                }
-            }
-            
-            if !flag {
-                UserDefaults.standard.set(currentWeeklyRankingDate, forKey: "weeklyComboRanking")
-                UserDefaults.standard.set(0, forKey: "combo")
-            }
-            
-            
-        } catch {
-            
-        }
-    }
+//    func checkDuration() async {
+//        var flag = true
+//        do {
+//            guard let leaderboard = try await GKLeaderboard.loadLeaderboards(
+//                IDs: ["com.LinearPractice.keeki.WeeklyComboRanking"]
+//            ).first else {
+//                return
+//            }
+//            
+//            guard let startDate = leaderboard.startDate else {
+//                return
+//            }
+//            
+//            let currentWeeklyRankingDate = weeklyDateKey(startDate)
+//            if let strData = UserDefaults.standard.string(forKey: "weeklyComboRanking") {
+//                if strData != currentWeeklyRankingDate {
+//                    flag = false
+//                }
+//            }
+//            
+//            if !flag {
+//                UserDefaults.standard.set(currentWeeklyRankingDate, forKey: "weeklyComboRanking")
+//                UserDefaults.standard.set(0, forKey: "combo")
+//            }
+//            
+//            
+//        } catch {
+//            
+//        }
+//    }
     
     //
     func initializeLocalPlayer() {

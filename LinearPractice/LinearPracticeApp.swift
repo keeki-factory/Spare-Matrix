@@ -138,9 +138,9 @@ struct LinearPracticeApp: App {
                 GameCenterManager.shared.initializeLocalPlayer()
                 
                 if GameCenterManager.shared.isAuthenticated {
-                    Task {
-                        await GameCenterManager.shared.checkDuration()
-                    }
+//                    Task {
+//                        await GameCenterManager.shared.checkDuration()
+//                    }
                 }
                 print("called")
                 do {

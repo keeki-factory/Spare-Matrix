@@ -511,7 +511,7 @@ struct ContentView: View {
                     
                     if gameCenterManager.isAuthenticated {
                         Task {
-                            await gameCenterManager.checkDuration()
+//                            await gameCenterManager.checkDuration()
                             contentViewModel.appear()
                         }
                     } else {

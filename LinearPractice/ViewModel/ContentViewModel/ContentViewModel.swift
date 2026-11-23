@@ -109,7 +109,7 @@ class ContentViewModel: MatrixManager {
     
     func fromActiveToInactive() {
         print("called fromactive to inactive")
-            GameCenterManager.shared.submitScore(success, to: "com.LinearPractice.keekifami.HighScore")
+            GameCenterManager.shared.submitScore(success, to: "com.LinearPractice.keeki.maxcombo")
             GameCenterManager.shared.submitScore(combo, to: "com.LinearPractice.keeki.WeeklyComboRanking")
             UserDefaults.standard.set(combo, forKey: "combo")
             UserDefaults.standard.set(success, forKey: "success")
