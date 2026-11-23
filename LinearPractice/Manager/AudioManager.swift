@@ -72,6 +72,10 @@ class BGMPlayer {
         print("ストップしました")
     }
     
+    func setVolume(_ volume: Float, _ duration: CGFloat = 0.0) {
+        audioPlayer?.setVolume(volume, fadeDuration: duration)
+    }
+    
     // ストップする
     func stop() {
         self.audioPlayer?.stop()

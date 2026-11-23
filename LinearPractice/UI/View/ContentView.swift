@@ -332,6 +332,9 @@ struct ContentView: View {
     var memoButtonAlignment: Alignment {
         settingViewModel.selectedHand == .right ? .bottomTrailing : .bottomLeading
     }
+    var keyboardType: KeyboardHand {
+        settingViewModel.selectedHand == .right ? .right : .left
+    }
     
     struct comboAnimator {
         var y: CGFloat = 10.0
@@ -340,13 +343,14 @@ struct ContentView: View {
     
     var body: some View {
         @Bindable var contentViewModel = contentViewModel
-
-        ZStack {
+        
+        GeometryReader { geometry in
+            ZStack {
                 BackgroundAnimationView(phase: contentViewModel.nowBackgroundPhase)
                     .ignoresSafeArea()
                 BubbleBackgroundView(isActive: $contentViewModel.isBubbleAnimation)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    
+                
                 VStack(spacing: 0) {
                     Group {
                         VStack {
@@ -419,7 +423,7 @@ struct ContentView: View {
                                 Task {
                                     await contentViewModel.checkAnswer()
                                 }
-                            }, number: {
+                            }, hand: keyboardType, number: {
                                 SoundPlayer.shared.play(.tap)
                             }, minus: {
                                 SoundPlayer.shared.play(.tap)
@@ -427,8 +431,10 @@ struct ContentView: View {
                                 SoundPlayer.shared.play(.tap)
                             })
                         }
+                        .frame(width: geometry.size.width, height: geometry.size.height*0.4)
                     } else {
                         MemoView(memoView: $memoView, isKeyboard: $contentViewModel.isKeyboard)
+                            .frame(width: geometry.size.width, height: geometry.size.height*0.4)
                             .shadow(color: .gray.opacity(0.25), radius: 10, x: 0, y: -10)
                             .overlay(alignment: settingViewModel.selectedHand == .right ? .topTrailing : .topLeading) {
                                 HStack {
@@ -525,8 +531,8 @@ struct ContentView: View {
                                 Text("\(contentViewModel.combo)combo").frame(alignment: .bottom)
                                     .id(contentViewModel.combo)
                                     .font(.system(size: 15))
-//                                    .contentTransition(.numericText(value: Double(contentViewModel.combo)))
-//                                Text("combo")
+                                //                                    .contentTransition(.numericText(value: Double(contentViewModel.combo)))
+                                //                                Text("combo")
                             }
                             .onChange(of: contentViewModel.combo) {
                                 print("changed: \(contentViewModel.combo)")
@@ -546,8 +552,9 @@ struct ContentView: View {
                     }
                     .customSharedBackgroundVisibility()
                 }
-        }
-        .overlay(alignment: .top) {
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .overlay(alignment: .top) {
                 Text("\"\(contentViewModel.phrasePer5.nowPhrase)\"")
                     .italic()
                     .font(.caption)
@@ -569,6 +576,7 @@ struct ContentView: View {
                             LinearKeyframe(10, duration: 0.2)
                         }
                     })
+            }
         }
     }
 }

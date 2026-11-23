@@ -57,6 +57,7 @@ struct TimeAttackChooseView: View {
     @State private var isTapped = false
     
     var body: some View {
+        
         ZStack {
             GridBackground()
             
@@ -203,353 +204,364 @@ struct TimeAttackPlayingView: View {
     var memoButtonAlignment: Alignment {
         settingViewModel.selectedHand == .right ? .bottomTrailing : .bottomLeading
     }
+    var keyboardType: KeyboardHand {
+        settingViewModel.selectedHand == .right ? .right : .left
+    }
     
     var body: some View {
         @Bindable var timeAttackViewModel = timeAttackViewModel
-        ZStack {
-            if timeAttackViewModel.feverPhase == .fever {
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            stops: [
-                                .init(color: Color(
-                                    red: 2/255,
-                                    green: 40/255,
-                                    blue: 80/255
-                                ), location: 0.0),
-                                .init(color: Color(
-                                    red: 0/255,
-                                    green: 0/255,
-                                    blue: 0/255
-                                ), location: 0.5),
-                                .init(color: Color(
-                                    red: 0/255,
-                                    green: 0/255,
-                                    blue: 0/255
-                                ), location: 1.0)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom)
-                    )
-            }
-            BubbleBackgroundView(isActive: $timeAttackViewModel.isBubble)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            VStack(spacing: 0) {
-                
-                // bar
+        GeometryReader { geometry in
+            ZStack {
                 if timeAttackViewModel.feverPhase == .fever {
-                    VStack(spacing: 1) {
-                        ProgressView(value: timeAttackViewModel.progress)
-                            .frame(height: 50)
-                            .padding([.leading, .trailing], 150)
-                            .tint(timeAttackViewModel.tintColor)
-                        Text("フィーバーまであと\(timeAttackViewModel.combo)/10問")
-                            .font(.caption)
-                            .opacity(0.5)
-                    }
-                } else {
-                    VStack (spacing: 1) {
-                        ProgressView(value: Double(timeAttackViewModel.combo)/10.0)
-                            .frame(height: 50)
-                            .padding([.leading, .trailing], 150)
-                            .tint(timeAttackViewModel.tintColor)
-                        Text("\(String(format: "%1f", timeAttackViewModel.remainingTime))")
-                            .font(.caption)
-                            .foregroundStyle(.white.opacity(0.5))
-                    }
-                }
-                
-                // 画面上部
-                Group {
-                    switch timeAttackViewModel.nowPhase {
-                    case .playing(.before):
-                        TimeAttackPlayingBeforeView(
-                            timeAttackViewModel: timeAttackViewModel,
-                            isPushed: $timeAttackViewModel.isPushedBeforeState
+                    Rectangle()
+                        .fill(
+                            LinearGradient(
+                                stops: [
+                                    .init(color: Color(
+                                        red: 2/255,
+                                        green: 40/255,
+                                        blue: 80/255
+                                    ), location: 0.0),
+                                    .init(color: Color(
+                                        red: 0/255,
+                                        green: 0/255,
+                                        blue: 0/255
+                                    ), location: 0.5),
+                                    .init(color: Color(
+                                        red: 0/255,
+                                        green: 0/255,
+                                        blue: 0/255
+                                    ), location: 1.0)
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom)
                         )
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    default:
-                        TimeAttackProblemView(timeAttackViewModel: timeAttackViewModel)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
                 }
-                .overlay(alignment: .bottom) {
-                    HStack {
-                        Text("\(timeAttackViewModel.userInput.isEmpty ? "   " : timeAttackViewModel.userInput)")
-                            .font(Font.title)
-                            .background(Color(red: 217/255, green: 217/255, blue: 217/255))
+                BubbleBackgroundView(isActive: $timeAttackViewModel.isBubble)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack(spacing: 0) {
+                    
+                    // bar
+                    if timeAttackViewModel.feverPhase == .fever {
+                        VStack(spacing: 1) {
+                            ProgressView(value: timeAttackViewModel.progress)
+                                .frame(height: 50)
+                                .padding([.leading, .trailing], 150)
+                                .tint(timeAttackViewModel.tintColor)
+                            Text("フィーバー！得点が２倍に！")
+                                .foregroundStyle(.white.opacity(0.5))
+                        }
+                    } else {
+                        VStack (spacing: 1) {
+                            ProgressView(value: Double(timeAttackViewModel.combo)/10.0)
+                                .frame(height: 50)
+                                .padding([.leading, .trailing], 150)
+                                .tint(timeAttackViewModel.tintColor)
+                            Text("フィーバーまであと\(10-timeAttackViewModel.combo)問")
+                                .font(.caption)
+                                .opacity(0.5)
+                        }
                     }
-                    .frame(maxWidth: .infinity, maxHeight: 40)
-                    .padding()
-                    .keyframeAnimator(initialValue: 0.0, trigger: timeAttackViewModel.checkAnimation) { content, value in
-                        content.offset(x: value)
-                    } keyframes: { _ in
-                        KeyframeTrack {
-                            MoveKeyframe(10.0)
-                            LinearKeyframe(-10.0, duration: 0.1)
-                            LinearKeyframe(5.0, duration: 0.1)
-                            LinearKeyframe(-5.0, duration: 0.1)
-                            LinearKeyframe(2.0, duration: 0.1)
-                            LinearKeyframe(-2.0, duration: 0.1)
-                            LinearKeyframe(1.0, duration: 0.1)
-                            LinearKeyframe(-1.0, duration: 0.1)
-                            LinearKeyframe(0.5, duration: 0.1)
-                            LinearKeyframe(-0.5, duration: 0.1)
+                    
+                    // 画面上部
+                    Group {
+                        switch timeAttackViewModel.nowPhase {
+                        case .playing(.before):
+                            TimeAttackPlayingBeforeView(
+                                timeAttackViewModel: timeAttackViewModel,
+                                isPushed: $timeAttackViewModel.isPushedBeforeState
+                            )
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        default:
+                            TimeAttackProblemView(timeAttackViewModel: timeAttackViewModel)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
+                    }
+                    .overlay(alignment: .bottom) {
+                        HStack {
+                            Text("\(timeAttackViewModel.userInput.isEmpty ? "   " : timeAttackViewModel.userInput)")
+                                .font(Font.title)
+                                .background(Color(red: 217/255, green: 217/255, blue: 217/255))
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: 40)
+                        .padding()
+                        .keyframeAnimator(initialValue: 0.0, trigger: timeAttackViewModel.checkAnimation) { content, value in
+                            content.offset(x: value)
+                        } keyframes: { _ in
+                            KeyframeTrack {
+                                MoveKeyframe(10.0)
+                                LinearKeyframe(-10.0, duration: 0.1)
+                                LinearKeyframe(5.0, duration: 0.1)
+                                LinearKeyframe(-5.0, duration: 0.1)
+                                LinearKeyframe(2.0, duration: 0.1)
+                                LinearKeyframe(-2.0, duration: 0.1)
+                                LinearKeyframe(1.0, duration: 0.1)
+                                LinearKeyframe(-1.0, duration: 0.1)
+                                LinearKeyframe(0.5, duration: 0.1)
+                                LinearKeyframe(-0.5, duration: 0.1)
+                            }
+                            
+                        }
+                    }
+                    .overlay(alignment: memoButtonAlignment) {
+                        ZStack {
+                            Button(action: {
+                                
+                            }, label: {
+                                ZStack {
+                                    Rectangle()
+                                        .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
+                                        .frame(width: 40, height: 40)
+                                    Image(systemName: timeAttackViewModel.isKeyboard ? "pencil.tip" : "plus.forwardslash.minus")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 20, height: 20)
+                                }
+                            })
+                            .buttonStyle(SubButtonStyle(onTouchUp: {
+                                timeAttackViewModel.togglePadView()
+                                if timeAttackViewModel.isKeyboard {
+                                    memoView.drawing = PKDrawing()
+                                }
+                            }))
+                            .padding()
+                            if timeAttackViewModel.nowPhase == .playing(.before) {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(.black.opacity(0.5))
+                                    .frame(width: 41, height: 41
+                                    )
+                                    .padding()
+                            }
                         }
                         
                     }
-                }
-                .overlay(alignment: memoButtonAlignment) {
-                    ZStack {
+                    .overlay(alignment: .topLeading) {
                         Button(action: {
                             
                         }, label: {
                             ZStack {
                                 Rectangle()
-                                    .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
+                                    .fill(.red)
                                     .frame(width: 40, height: 40)
-                                Image(systemName: timeAttackViewModel.isKeyboard ? "pencil.tip" : "plus.forwardslash.minus")
+                                Image(systemName: "stop.circle")
                                     .resizable()
                                     .scaledToFit()
+                                    .foregroundStyle(.white)
                                     .frame(width: 20, height: 20)
                             }
                         })
                         .buttonStyle(SubButtonStyle(onTouchUp: {
-                            timeAttackViewModel.togglePadView()
-                            if timeAttackViewModel.isKeyboard {
-                                memoView.drawing = PKDrawing()
-                            }
+                            BGMPlayer.shared.setVolume(0.25)
+                            timeAttackViewModel.showPauseButton = true
                         }))
-                        .padding()
+                        .padding([.leading])
                         if timeAttackViewModel.nowPhase == .playing(.before) {
                             RoundedRectangle(cornerRadius: 5)
                                 .fill(.black.opacity(0.5))
                                 .frame(width: 41, height: 41
                                 )
-                                .padding()
+                                .padding([.leading])
+                        }
+                    }
+                    ZStack {
+                        if timeAttackViewModel.isKeyboard {
+                            NumberPadView("submit", text: $timeAttackViewModel.userInput, isHaptic: settingViewModel.isOn, action: {
+                                Task {
+                                    await timeAttackViewModel.checkAnswer()
+                                }
+                            }, hand: keyboardType ,number: {
+                                SoundPlayer.shared.play(.tap)
+                            }, minus: {
+                                SoundPlayer.shared.play(.tap)
+                            }, backspace: {
+                                SoundPlayer.shared.play(.tap)
+                            })
+                            .frame(height: geometry.size.height*0.4)
+                        } else {
+                            MemoView(memoView: $memoView, isKeyboard: $timeAttackViewModel.isKeyboard)
+                                .frame(height: geometry.size.height*0.4)
+                                .shadow(color: .gray.opacity(0.25), radius: 10, x: 0, y: -10)
+                                .overlay(alignment: settingViewModel.selectedHand == .right ? .topTrailing : .topLeading) {
+                                    HStack {
+                                        Button(action: {
+                                            
+                                        }, label: {
+                                            ZStack {
+                                                Rectangle()
+                                                    .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
+                                                    .frame(width: 40, height: 40)
+                                                Image(systemName: memoTool == .pencil ? "pencil" : "eraser.fill")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 20, height: 20)
+                                            }
+                                        })
+                                        .buttonStyle(SubButtonStyle(onTouchUp: {
+                                            SoundPlayer.shared.play(.tap)
+                                            if memoTool == .eraser {
+                                                memoView.tool = PKInkingTool(
+                                                    .pen,
+                                                    color: .black,
+                                                    width: 5
+                                                )
+                                                memoTool = .pencil
+                                                print("現在はペンです")
+                                            } else {
+                                                memoView.tool = PKEraserTool(.vector)
+                                                print("現在は消しゴムです")
+                                                memoTool = .eraser
+                                            }
+                                        }))
+                                        
+                                        
+                                        Button(action: {
+                                            SoundPlayer.shared.play(.tap)
+                                            memoView.drawing = PKDrawing()
+                                        }, label: {
+                                            ZStack {
+                                                Rectangle()
+                                                    .fill(.red)
+                                                    .frame(width: 40, height: 40)
+                                                Image(systemName: "trash")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .foregroundStyle(Color.white)
+                                                    .frame(width: 20, height: 20)
+                                            }
+                                        })
+                                        .buttonStyle(SubButtonStyle(onTouchUp: {
+                                            memoView.drawing = PKDrawing()
+                                        }))
+                                    }
+                                    .padding()
+                                }
+                        }
+                        
+                        if timeAttackViewModel.nowPhase == .playing(.before) {
+                            Rectangle()
+                                .fill(.black.opacity(0.5))
+                                .frame(height: geometry.size.height*0.4)
+                                .ignoresSafeArea()
                         }
                     }
                     
                 }
                 .overlay(alignment: .topLeading) {
-                    Button(action: {
-                        
-                    }, label: {
-                        ZStack {
-                            Rectangle()
-                                .fill(.red)
-                                .frame(width: 40, height: 40)
-                            Image(systemName: "stop.circle")
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundStyle(.white)
-                                .frame(width: 20, height: 20)
-                        }
-                    })
-                    .buttonStyle(SubButtonStyle(onTouchUp: {
-                        timeAttackViewModel.showPauseButton = true
-                    }))
-                    .padding([.leading])
-                    if timeAttackViewModel.nowPhase == .playing(.before) {
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(.black.opacity(0.5))
-                            .frame(width: 41, height: 41
-                            )
-                            .padding([.leading])
-                    }
+                    Text("Score \(timeAttackViewModel.score)")
+                        .font(.headline)
+                    //                        .foregroundStyle(timeAttackViewModel.nowBackgroundPhase == .phase1 ? .black : .white)
+                        .padding()
+                        .foregroundStyle(timeAttackViewModel.feverPhase == .fever ? .white : .black)
                 }
-                ZStack {
-                    if timeAttackViewModel.isKeyboard {
-                        NumberPadView("submit", text: $timeAttackViewModel.userInput, isHaptic: settingViewModel.isOn, action: {
-                            Task {
-                                await timeAttackViewModel.checkAnswer()
-                            }
-                        }, number: {
-                            SoundPlayer.shared.play(.tap)
-                        }, minus: {
-                            SoundPlayer.shared.play(.tap)
-                        }, backspace: {
-                            SoundPlayer.shared.play(.tap)
-                        })
-                    } else {
-                        MemoView(memoView: $memoView, isKeyboard: $timeAttackViewModel.isKeyboard)
-                            .shadow(color: .gray.opacity(0.25), radius: 10, x: 0, y: -10)
-                            .overlay(alignment: settingViewModel.selectedHand == .right ? .topTrailing : .topLeading) {
-                                HStack {
-                                    Button(action: {
-                                        
-                                    }, label: {
-                                        ZStack {
-                                            Rectangle()
-                                                .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
-                                                .frame(width: 40, height: 40)
-                                            Image(systemName: memoTool == .pencil ? "pencil" : "eraser.fill")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 20, height: 20)
-                                        }
-                                    })
-                                    .buttonStyle(SubButtonStyle(onTouchUp: {
-                                        SoundPlayer.shared.play(.tap)
-                                        if memoTool == .eraser {
-                                            memoView.tool = PKInkingTool(
-                                                .pen,
-                                                color: .black,
-                                                width: 5
-                                            )
-                                            memoTool = .pencil
-                                            print("現在はペンです")
-                                        } else {
-                                            memoView.tool = PKEraserTool(.vector)
-                                            print("現在は消しゴムです")
-                                            memoTool = .eraser
-                                        }
-                                    }))
-                                    
-                                    
-                                    Button(action: {
-                                        SoundPlayer.shared.play(.tap)
-                                        memoView.drawing = PKDrawing()
-                                    }, label: {
-                                        ZStack {
-                                            Rectangle()
-                                                .fill(.red)
-                                                .frame(width: 40, height: 40)
-                                            Image(systemName: "trash")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .foregroundStyle(Color.white)
-                                                .frame(width: 20, height: 20)
-                                        }
-                                    })
-                                    .buttonStyle(SubButtonStyle(onTouchUp: {
-                                        memoView.drawing = PKDrawing()
-                                    }))
-                                }
-                                .padding()
-                            }
-                    }
-                    
-                    if timeAttackViewModel.nowPhase == .playing(.before) {
-                        Rectangle()
-                            .fill(.black.opacity(0.5))
-                            .ignoresSafeArea()
-                    }
+                .overlay(alignment: .topTrailing) {
+                    Text("残り \(String(format: "%.1f", timeAttackViewModel.remainingSeconds)) 秒")
+                        .font(.headline)
+                    //                        .foregroundStyle(timeAttackViewModel.nowBackgroundPhase == .phase1 ? .black : .white)
+                        .padding()
+                        .foregroundStyle(timeAttackViewModel.feverPhase == .fever ? .white : .black)
                 }
                 
-            }
-            .overlay(alignment: .topLeading) {
-                Text("Score \(timeAttackViewModel.score)")
-                    .font(.headline)
-                //                        .foregroundStyle(timeAttackViewModel.nowBackgroundPhase == .phase1 ? .black : .white)
-                    .padding()
-                    .foregroundStyle(timeAttackViewModel.feverPhase == .fever ? .white : .black)
-            }
-            .overlay(alignment: .topTrailing) {
-                Text("残り \(String(format: "%.1f", timeAttackViewModel.remainingSeconds)) 秒")
-                    .font(.headline)
-                //                        .foregroundStyle(timeAttackViewModel.nowBackgroundPhase == .phase1 ? .black : .white)
-                    .padding()
-                    .foregroundStyle(timeAttackViewModel.feverPhase == .fever ? .white : .black)
-            }
-            
-            if timeAttackViewModel.nowPhase == .playing(.done) {
-                Rectangle()
-                    .fill(.black.opacity(0.5))
-                    .overlay() {
-                        Text("終了！")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundStyle(.white)
-                    }
-                    .ignoresSafeArea()
-            }
-            
-            if (timeAttackViewModel.nowPhase.isNowPlaying) && timeAttackViewModel.showPauseButton {
-                ZStack {
+                if timeAttackViewModel.nowPhase == .playing(.done) {
                     Rectangle()
                         .fill(.black.opacity(0.5))
-                        .ignoresSafeArea()
-                    GeometryReader {geometry in
-                        VStack {
-                            Text("Pause")
+                        .overlay() {
+                            Text("終了！")
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
                                 .foregroundStyle(.white)
+                        }
+                        .ignoresSafeArea()
+                }
+                
+                if (timeAttackViewModel.nowPhase.isNowPlaying) && timeAttackViewModel.showPauseButton {
+                    ZStack {
+                        Rectangle()
+                            .fill(.black.opacity(0.5))
+                            .ignoresSafeArea()
+                        GeometryReader {geometry in
                             VStack {
-                                Button(action: {}, label: {
-                                    ZStack {
-                                        Rectangle()
-                                            .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
-                                            .frame(width: geometry.size.width*0.6, height: geometry.size.height*0.05)
-                                        Text("再挑戦する")
-                                    }
-                                })
+                                Text("Pause")
+                                    .font(.largeTitle)
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(.white)
+                                VStack {
+                                    Button(action: {}, label: {
+                                        ZStack {
+                                            Rectangle()
+                                                .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
+                                                .frame(width: geometry.size.width*0.6, height: geometry.size.height*0.05)
+                                            Text("やり直す")
+                                        }
+                                    })
                                     .buttonStyle(SubButtonStyle(onTouchUp: {
+                                        BGMPlayer.shared.setVolume(1.0)
                                         timeAttackViewModel.restart()
                                     }))
-                                
-                                Button(action: {}, label: {
-                                    ZStack {
-                                        Rectangle()
-                                            .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
-                                            .frame(width: geometry.size.width*0.6, height: geometry.size.height*0.05)
-                                        Text("やめる")
-                                    }
-                                })
+                                    
+                                    Button(action: {}, label: {
+                                        ZStack {
+                                            Rectangle()
+                                                .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
+                                                .frame(width: geometry.size.width*0.6, height: geometry.size.height*0.05)
+                                            Text("タイムアタックをやめる")
+                                        }
+                                    })
                                     .buttonStyle(SubButtonStyle(onTouchUp: {
-                                        
-                                            timeAttackViewModel.pauseQuit()
+                                        BGMPlayer.shared.setVolume(1.0)
+                                        timeAttackViewModel.pauseQuit()
                                         
                                     }))
-                                Button(action: { }, label: {
-                                    ZStack {
-                                        Rectangle()
-                                            .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
-                                            .frame(width: geometry.size.width*0.6, height: geometry.size.height*0.05)
-                                        Text("Pause画面を閉じる")
-                                    }
-                                })
+                                    Button(action: { }, label: {
+                                        ZStack {
+                                            Rectangle()
+                                                .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
+                                                .frame(width: geometry.size.width*0.6, height: geometry.size.height*0.05)
+                                            Text("この画面を閉じる")
+                                        }
+                                    })
                                     .buttonStyle(SubButtonStyle(onTouchUp: {
+                                        BGMPlayer.shared.setVolume(1.0)
                                         timeAttackViewModel.backToGame()
                                     }))
+                                }
+                                .frame(width: geometry.size.width*0.8, height: geometry.size.height/3)
+                                .background {
+                                    Color.white
+                                }
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                .overlay() {
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(Color(red: 217/255, green: 217/255, blue: 217/255), lineWidth: 3)
+                                }
                             }
-                            .frame(width: geometry.size.width*0.8, height: geometry.size.height/3)
-                            .background {
-                                Color.white
-                            }
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                            .overlay() {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(Color(red: 217/255, green: 217/255, blue: 217/255), lineWidth: 3)
-                            }
+                            .frame(width: geometry.size.width, height: geometry.size.height)
                         }
-                        .frame(width: geometry.size.width, height: geometry.size.height)
+                    }
+                }
+                
+                // .playing(.before)かつ、isPushedBeforeStateでおされてない場合
+                if timeAttackViewModel.nowPhase == .playing(.before) && !timeAttackViewModel.isPushedBeforeState {
+                    Button(action:{
+                        SoundPlayer.shared.play(.countdown)
+                        timeAttackViewModel.start_count()
+                        timeAttackViewModel.isPushedBeforeState = true
+                    }, label: {
+                        Rectangle()
+                            .fill(.clear)
+                    })
+                }
+                
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .onAppear() {
+                if opacity == 1 {
+                    withAnimation {
+                        opacity = 0
                     }
                 }
             }
-            
-            // .playing(.before)かつ、isPushedBeforeStateでおされてない場合
-            if timeAttackViewModel.nowPhase == .playing(.before) && !timeAttackViewModel.isPushedBeforeState {
-                Button(action:{
-                    SoundPlayer.shared.play(.countdown)
-                    timeAttackViewModel.start_count()
-                    timeAttackViewModel.isPushedBeforeState = true
-                }, label: {
-                    Rectangle()
-                        .fill(.clear)
-                })
-            }
-            
+            .navigationBarBackButtonHidden(true)
         }
-        .onAppear() {
-            if opacity == 1 {
-                withAnimation {
-                    opacity = 0
-                }
-            }
-        }
-        .navigationBarBackButtonHidden(true)
         
     }
 }
